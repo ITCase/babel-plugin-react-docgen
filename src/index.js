@@ -24,6 +24,7 @@ function injectReactDocgenInfo(path, state, code, t) {
   const {
     resolver: resolverOpt,
     handlers: handlersOpt,
+    factoryHandlers: factoryHandlersOpt,
     DOC_GEN_COLLECTION_NAME,
     ...opts
   } = state.opts;
@@ -46,6 +47,16 @@ function injectReactDocgenInfo(path, state, code, t) {
           customHandlers.push(handler);
         }
       });
+    }
+    if (factoryHandlersOpt) {
+      factoryHandlersOpt.forEach(function (factoryHandler) {
+        if (typeof factoryHandler === 'function') {
+          const handler = factoryHandler(path, state, code, t)
+          if (typeof handler === 'function') {
+            customHandlers.push(handler);
+          }
+        }
+      })
     }
 
     const handlers = [...defaultHandlers, ...customHandlers, actualNameHandler];
